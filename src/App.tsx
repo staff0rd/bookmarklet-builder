@@ -7,14 +7,24 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Button from "@mui/material/Button";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import createTheme from "@mui/material/styles/createTheme";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import DarkIcon from "@mui/icons-material/NightsStay";
 import LightIcon from "@mui/icons-material/WbSunny";
 import ToggleButton from "@mui/material/ToggleButton";
 import { format } from "prettier/standalone";
 import * as monaco from "monaco-editor";
 import * as parser from "prettier/parser-babel";
+import { useKeyPress } from "ahooks";
 import Tooltip from "@mui/material/Tooltip";
+
+const getOs = () => {
+  if (navigator.appVersion.indexOf("Win") != -1) return "Windows";
+  if (navigator.appVersion.indexOf("Mac") != -1) return "MacOS";
+  if (navigator.appVersion.indexOf("X11") != -1) return "UNIX";
+  if (navigator.appVersion.indexOf("Linux") != -1) return "Linux";
+  return "Unknown OS";
+};
 
 enum EditorMode {
   Code = "CODE",
@@ -25,7 +35,7 @@ function App() {
   const [mode, setMode] = useState(EditorMode.Code);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
-
+  const os = getOs();
   const handleFormat = () => {
     if (editor) {
       const source = editor.getValue();
@@ -36,6 +46,11 @@ function App() {
       editor.setValue(formatted);
     }
   };
+
+  useKeyPress(os === "MacOS" ? "meta.s" : "control.s", (e) => {
+    handleFormat();
+    e.preventDefault();
+  });
 
   const handleChange = (event: React.SyntheticEvent, newValue: EditorMode) =>
     setMode(newValue);
