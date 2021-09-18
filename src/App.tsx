@@ -60,7 +60,7 @@ function App() {
     }
   };
 
-  useKeyPress(os === "MacOS" ? "meta.s" : "control.s", (e) => {
+  useKeyPress(os === "MacOS" ? "meta.s" : "ctrl.s", (e) => {
     handleFormat();
     e.preventDefault();
   });
