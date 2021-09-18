@@ -14,6 +14,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import { format } from "prettier/standalone";
 import * as monaco from "monaco-editor";
 import * as parser from "prettier/parser-babel";
+import Tooltip from "@mui/material/Tooltip";
 
 enum EditorMode {
   Code = "CODE",
@@ -55,7 +56,9 @@ function App() {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={mode}>
             <TabPanel value={EditorMode.Code}>
-              <Button onClick={handleFormat}>Format</Button>
+              <Tooltip title={"MacOS" ? "Cmd+S" : "Ctrl+S"}>
+                <Button onClick={handleFormat}>Format</Button>
+              </Tooltip>
               <ToggleButton
                 sx={{
                   border: "none",
