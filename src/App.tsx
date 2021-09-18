@@ -18,9 +18,11 @@ import * as parser from "prettier/parser-babel";
 import { useKeyPress } from "ahooks";
 import Tooltip from "@mui/material/Tooltip";
 import * as terser from "terser";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
 
-const initialCode = `
-const oneFunction = () => 'result';
+const initialCode = `const oneFunction = () => 'result';
 console.log(oneFunction());
 `;
 
@@ -32,44 +34,36 @@ const getOs = () => {
   return "Unknown OS";
 };
 
-enum EditorMode {
-  Code = "CODE",
-  Bookmarklet = "BOOKMARKLET",
-}
-
 function App() {
-  const [editorMode, setEditorMode] = useState(EditorMode.Code);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
+  const [bookmarklet, setBookmarklet] = useState("");
+  const [name, setName] = useState("Link");
   const os = getOs();
+
+  const minify = async (source: string) => {
+    const formatted = await terser.minify(source);
+    return `javascript:(function(){${formatted.code}})()`;
+  };
 
   const handleFormat = async () => {
     if (editor) {
       const source = editor.getValue();
-      if (editorMode === EditorMode.Code) {
-        const formatted = prettier(source, {
-          parser: "babel",
-          plugins: [parser],
-        });
-        editor.setValue(formatted);
-      } else {
-        const formatted = await terser.minify(source);
-        editor.setValue(formatted.code!);
-      }
+
+      const formatted = prettier(source, {
+        parser: "babel",
+        plugins: [parser],
+      });
+      editor.setValue(formatted);
+
+      setBookmarklet(await minify(formatted));
     }
   };
-
-  useEffect(() => {
-    handleFormat();
-  }, [editorMode]);
 
   useKeyPress(os === "MacOS" ? "meta.s" : "control.s", (e) => {
     handleFormat();
     e.preventDefault();
   });
-
-  const handleChange = (event: React.SyntheticEvent, newValue: EditorMode) =>
-    setEditorMode(newValue);
 
   const theme = useMemo(
     () =>
@@ -91,48 +85,75 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Paper>
-        <Box sx={{ width: "100%", typography: "body1" }}>
-          <Tooltip title={"MacOS" ? "Cmd+S" : "Ctrl+S"}>
-            <Button onClick={handleFormat}>Format</Button>
-          </Tooltip>
+        <Box
+          sx={{
+            width: "100%",
+            typography: "body1",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <Tooltip title={"MacOS" ? "Cmd+S" : "Ctrl+S"}>
+              <Button onClick={handleFormat}>Format</Button>
+            </Tooltip>
 
-          <Button onClick={handleRun}>Run code</Button>
-
-          <ToggleButton
-            sx={{
-              border: "none",
-              "&.Mui-selected": { backgroundColor: "inherit" },
-            }}
-            value="check"
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            {isDarkMode && <DarkIcon fontSize="small" />}
-            {!isDarkMode && <LightIcon fontSize="small" />}
-          </ToggleButton>
-
-          <TabContext value={editorMode}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
-                onChange={handleChange}
-                aria-label="lab API tabs example"
-              >
-                <Tab label="Code" value={EditorMode.Code} />
-                <Tab label="Bookmarklet" value={EditorMode.Bookmarklet} />
-              </TabList>
-            </Box>
-          </TabContext>
+            <Button onClick={handleRun}>Run code</Button>
+          </Box>
+          <Box>
+            <ToggleButton
+              sx={{
+                border: "none",
+                "&.Mui-selected": { backgroundColor: "inherit" },
+              }}
+              value="check"
+              selected={isDarkMode}
+              onChange={() => {
+                setIsDarkMode(!isDarkMode);
+              }}
+            >
+              {isDarkMode && <DarkIcon fontSize="small" />}
+              {!isDarkMode && <LightIcon fontSize="small" />}
+            </ToggleButton>
+          </Box>
         </Box>
+        <Box sx={{ display: "flex", alignItems: "end" }}>
+          <Typography variant="h4">Bookmarklet</Typography>
+          <Link sx={{ marginBottom: "6px", marginLeft: 1 }} href={bookmarklet}>
+            {name}
+          </Link>
+        </Box>
+        <Box>
+          <Box
+            component="form"
+            sx={{
+              display: "flex",
+              "& > :not(style)": { m: 1 },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              variant="filled"
+              size="small"
+              label="Name"
+            />
+          </Box>
+        </Box>
+
+        <Typography variant="h4">Code</Typography>
         <Editor
           height="90vh"
           defaultLanguage="javascript"
           theme={isDarkMode ? "vs-dark" : ""}
           defaultValue={initialCode}
-          onMount={(e) => setEditor(e)}
+          onMount={async (e) => {
+            setEditor(e);
+            setBookmarklet(await minify(e.getValue()));
+          }}
           options={{
-            wordWrap: editorMode === EditorMode.Bookmarklet ? "on" : "off",
             minimap: { enabled: false },
           }}
         />
