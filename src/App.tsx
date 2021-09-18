@@ -11,6 +11,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DarkIcon from "@mui/icons-material/NightsStay";
 import LightIcon from "@mui/icons-material/WbSunny";
 import ToggleButton from "@mui/material/ToggleButton";
+import { format } from "prettier/standalone";
+import * as monaco from "monaco-editor";
+import * as parser from "prettier/parser-babel";
 
 enum EditorMode {
   Code = "CODE",
@@ -20,6 +23,18 @@ enum EditorMode {
 function App() {
   const [mode, setMode] = useState(EditorMode.Code);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
+
+  const handleFormat = () => {
+    if (editor) {
+      const source = editor.getValue();
+      const formatted = format(source, {
+        parser: "babel",
+        plugins: [parser],
+      });
+      editor.setValue(formatted);
+    }
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: EditorMode) =>
     setMode(newValue);
@@ -40,7 +55,7 @@ function App() {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={mode}>
             <TabPanel value={EditorMode.Code}>
-              <Button>Format</Button>
+              <Button onClick={handleFormat}>Format</Button>
               <ToggleButton
                 sx={{
                   border: "none",
@@ -73,6 +88,7 @@ function App() {
           defaultLanguage="javascript"
           theme={isDarkMode ? "vs-dark" : ""}
           defaultValue="console.log('something'); const other = () => 'a function that returns a string'"
+          onMount={(e) => setEditor(e)}
         />
       </Paper>
     </ThemeProvider>
