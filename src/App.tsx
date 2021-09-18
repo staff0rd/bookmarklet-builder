@@ -42,6 +42,10 @@ function App() {
             <TabPanel value={EditorMode.Code}>
               <Button>Format</Button>
               <ToggleButton
+                sx={{
+                  border: "none",
+                  "&.Mui-selected": { backgroundColor: "inherit" },
+                }}
                 value="check"
                 selected={isDarkMode}
                 onChange={() => {
