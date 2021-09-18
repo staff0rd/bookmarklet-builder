@@ -32,18 +32,23 @@ enum EditorMode {
 }
 
 function App() {
-  const [mode, setMode] = useState(EditorMode.Code);
+  const [editorMode, setEditorMode] = useState(EditorMode.Code);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
   const os = getOs();
-  const handleFormat = () => {
+  const handleFormat = async () => {
     if (editor) {
       const source = editor.getValue();
-      const formatted = format(source, {
-        parser: "babel",
-        plugins: [parser],
-      });
-      editor.setValue(formatted);
+      if (editorMode === EditorMode.Code) {
+        const formatted = format(source, {
+          parser: "babel",
+          plugins: [parser],
+        });
+        editor.setValue(formatted);
+      } else {
+        const formatted = await minify(source);
+        editor.setValue(formatted);
+      }
     }
   };
 
@@ -53,7 +58,7 @@ function App() {
   });
 
   const handleChange = (event: React.SyntheticEvent, newValue: EditorMode) =>
-    setMode(newValue);
+    setEditorMode(newValue);
 
   const theme = useMemo(
     () =>
@@ -69,7 +74,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Paper>
         <Box sx={{ width: "100%", typography: "body1" }}>
-          <TabContext value={mode}>
+          <TabContext value={editorMode}>
             <TabPanel value={EditorMode.Code}>
               <Tooltip title={"MacOS" ? "Cmd+S" : "Ctrl+S"}>
                 <Button onClick={handleFormat}>Format</Button>
