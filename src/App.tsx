@@ -35,7 +35,7 @@ const getOs = () => {
 };
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [bookmarklet, setBookmarklet] = useState("");
   const [name, setName] = useState("Link");
@@ -145,7 +145,7 @@ function App() {
 
         <Typography variant="h4">Code</Typography>
         <Editor
-          height="90vh"
+          height="250px"
           defaultLanguage="javascript"
           theme={isDarkMode ? "vs-dark" : ""}
           defaultValue={initialCode}
