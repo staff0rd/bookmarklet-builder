@@ -21,6 +21,7 @@ import * as terser from "terser";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
 
 const initialCode = `const oneFunction = () => 'result';
 console.log(oneFunction());
@@ -40,6 +41,7 @@ function App() {
   const [bookmarklet, setBookmarklet] = useState("");
   const [name, setName] = useState("Link");
   const os = getOs();
+  console.log(os);
 
   const minify = async (source: string) => {
     const formatted = await terser.minify(source);
@@ -94,7 +96,7 @@ function App() {
           }}
         >
           <Box>
-            <Tooltip title={"MacOS" ? "Cmd+S" : "Ctrl+S"}>
+            <Tooltip title={os === "MacOS" ? "Cmd+S" : "Ctrl+S"}>
               <Button onClick={handleFormat}>Format</Button>
             </Tooltip>
 
@@ -117,46 +119,53 @@ function App() {
             </ToggleButton>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", alignItems: "end" }}>
-          <Typography variant="h4">Bookmarklet</Typography>
-          <Link sx={{ marginBottom: "6px", marginLeft: 1 }} href={bookmarklet}>
-            {name}
-          </Link>
-        </Box>
-        <Box>
-          <Box
-            component="form"
-            sx={{
-              display: "flex",
-              "& > :not(style)": { m: 1 },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              variant="filled"
-              size="small"
-              label="Name"
+        <Grid container sx={{ p: 1 }}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="h5">Label</Typography>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                component="form"
+                sx={{
+                  display: "flex",
+                  "& > :not(style)": { m: 1 },
+                }}
+                noValidate
+                autoComplete="off"
+              >
+                <TextField
+                  onChange={(e) => setName(e.target.value)}
+                  value={name}
+                  variant="filled"
+                  size="small"
+                  hiddenLabel
+                />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {" "}
+            <Typography variant="h5">Bookmarklet</Typography>
+            <Link sx={{ marginLeft: 1 }} href={bookmarklet}>
+              {name}
+            </Link>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h5">Code</Typography>
+            <Editor
+              height="250px"
+              defaultLanguage="javascript"
+              theme={isDarkMode ? "vs-dark" : ""}
+              defaultValue={initialCode}
+              onMount={async (e) => {
+                setEditor(e);
+                setBookmarklet(await minify(e.getValue()));
+              }}
+              options={{
+                minimap: { enabled: false },
+              }}
             />
-          </Box>
-        </Box>
-
-        <Typography variant="h4">Code</Typography>
-        <Editor
-          height="250px"
-          defaultLanguage="javascript"
-          theme={isDarkMode ? "vs-dark" : ""}
-          defaultValue={initialCode}
-          onMount={async (e) => {
-            setEditor(e);
-            setBookmarklet(await minify(e.getValue()));
-          }}
-          options={{
-            minimap: { enabled: false },
-          }}
-        />
+          </Grid>
+        </Grid>
       </Paper>
     </ThemeProvider>
   );
