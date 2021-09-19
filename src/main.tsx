@@ -1,11 +1,14 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
-import App from './App'
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import { ScopedCssBaseline } from "@mui/material";
+import App from "./App";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ScopedCssBaseline>
+      <App />
+    </ScopedCssBaseline>
   </React.StrictMode>,
-  document.getElementById('root')
-)
+  document.getElementById("root")
+);
