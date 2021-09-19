@@ -18,18 +18,11 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
+import { getOs } from "./getOs";
 
 const initialCode = `const oneFunction = () => 'result';
 console.log(oneFunction());
 `;
-
-const getOs = () => {
-  if (navigator.appVersion.indexOf("Win") != -1) return "Windows";
-  if (navigator.appVersion.indexOf("Mac") != -1) return "MacOS";
-  if (navigator.appVersion.indexOf("X11") != -1) return "UNIX";
-  if (navigator.appVersion.indexOf("Linux") != -1) return "Linux";
-  return "Unknown OS";
-};
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
