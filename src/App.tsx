@@ -2,10 +2,6 @@ import React, { useMemo, useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import Button from "@mui/material/Button";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -36,10 +32,10 @@ const getOs = () => {
 };
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [bookmarklet, setBookmarklet] = useState("");
-  const [name, setName] = useState("Link");
+  const [name, setName] = useState("My bookmarklet");
   const os = getOs();
   console.log(os);
 
