@@ -37,6 +37,10 @@ function App() {
     return `javascript:(function(){${formatted.code}})()`;
   };
 
+  const compileBookmarklet = async (source: string) => {
+    setBookmarklet(await minify(source));
+  };
+
   const handleFormat = async () => {
     if (editor) {
       const source = editor.getValue();
@@ -46,8 +50,7 @@ function App() {
         plugins: [parser],
       });
       editor.setValue(formatted);
-
-      setBookmarklet(await minify(formatted));
+      compileBookmarklet(formatted);
     }
   };
 
@@ -147,8 +150,9 @@ function App() {
               defaultValue={initialCode}
               onMount={async (e) => {
                 setEditor(e);
-                setBookmarklet(await minify(e.getValue()));
+                compileBookmarklet(e.getValue());
               }}
+              onChange={(source) => compileBookmarklet(source ?? "")}
               options={{
                 minimap: { enabled: false },
               }}
