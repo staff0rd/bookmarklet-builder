@@ -20,9 +20,14 @@ import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import { getOs } from "./getOs";
 
-const initialCode = `const oneFunction = () => 'result';
-console.log(oneFunction());
+const initialCode = `const someFunction = () => 'hi there console!';
+console.log(someFunction());
 `;
+
+const getDefaultValue = () => {
+  const source = localStorage.getItem("source");
+  return source || initialCode;
+};
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -38,6 +43,7 @@ function App() {
   };
 
   const compileBookmarklet = async (source: string) => {
+    localStorage.setItem("source", source);
     setBookmarklet(await minify(source));
   };
 
@@ -147,7 +153,7 @@ function App() {
               height="250px"
               defaultLanguage="javascript"
               theme={isDarkMode ? "vs-dark" : ""}
-              defaultValue={initialCode}
+              defaultValue={getDefaultValue()}
               onMount={async (e) => {
                 setEditor(e);
                 compileBookmarklet(e.getValue());
