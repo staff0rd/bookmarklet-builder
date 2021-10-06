@@ -1,3 +1,5 @@
+import { atobu } from "b2a";
+
 export const SOURCE_KEY = "source";
 
 const startupSource = `const someFunction = () => "hello!";
@@ -8,16 +10,20 @@ const getDefaultValue = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const sourceFromQuery = urlParams.get(SOURCE_KEY);
   if (sourceFromQuery) {
-    if (window.history.replaceState) {
-      var newurl =
-        window.location.protocol +
-        "//" +
-        window.location.host +
-        window.location.pathname;
-      window.history.replaceState({ path: newurl }, "", newurl);
+    try {
+      if (window.history.replaceState) {
+        var newurl =
+          window.location.protocol +
+          "//" +
+          window.location.host +
+          window.location.pathname;
+        window.history.replaceState({ path: newurl }, "", newurl);
+      }
+      const result = atobu(sourceFromQuery);
+      return result;
+    } catch (e) {
+      console.error(e);
     }
-    const result = atob(sourceFromQuery);
-    return result;
   }
   const source = localStorage.getItem(SOURCE_KEY);
   return source || startupSource;
