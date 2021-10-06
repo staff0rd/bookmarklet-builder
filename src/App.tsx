@@ -19,14 +19,12 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import { getOs } from "./getOs";
+import { initialCode } from "./getInitialCode";
+import { getSourceFromUrl } from "./getSourceFromUrl";
 
-const initialCode = `const someFunction = () => 'hi there console!';
-console.log(someFunction());
-`;
-
-const getDefaultValue = () => {
-  const source = localStorage.getItem("source");
-  return source || initialCode;
+const minify = async (source: string) => {
+  const formatted = await terser.minify(source);
+  return `javascript:(function(){${formatted.code}})()`;
 };
 
 function App() {
@@ -35,12 +33,6 @@ function App() {
   const [bookmarklet, setBookmarklet] = useState("");
   const [name, setName] = useState("My bookmarklet");
   const os = getOs();
-  console.log(os);
-
-  const minify = async (source: string) => {
-    const formatted = await terser.minify(source);
-    return `javascript:(function(){${formatted.code}})()`;
-  };
 
   const compileBookmarklet = async (source: string) => {
     localStorage.setItem("source", source);
@@ -118,7 +110,7 @@ function App() {
           </Box>
         </Box>
         <Grid container sx={{ p: 1 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <Typography variant="h5">Label</Typography>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box
@@ -140,12 +132,19 @@ function App() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            {" "}
+          <Grid item xs={12} sm={4}>
             <Typography variant="h5">Bookmarklet</Typography>
-            <Link sx={{ marginLeft: 1 }} href={bookmarklet}>
-              {name}
-            </Link>
+            <Box sx={{ marginLeft: 1 }}>
+              <Link href={bookmarklet}>{name}</Link>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h5">Source</Typography>
+            <Box sx={{ marginLeft: 1 }}>
+              <Link href={getSourceFromUrl(editor?.getValue() || "")}>
+                {name} Source
+              </Link>
+            </Box>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h5">Code</Typography>
@@ -153,7 +152,7 @@ function App() {
               height="250px"
               defaultLanguage="javascript"
               theme={isDarkMode ? "vs-dark" : ""}
-              defaultValue={getDefaultValue()}
+              defaultValue={initialCode}
               onMount={async (e) => {
                 setEditor(e);
                 compileBookmarklet(e.getValue());
