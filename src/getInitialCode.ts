@@ -6,18 +6,19 @@ const startupSource = `const someFunction = () => "hello!";
 alert(someFunction());
 `;
 
+export const blankUrl =
+  window.location.protocol +
+  "//" +
+  window.location.host +
+  window.location.pathname;
+
 const getDefaultValue = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const sourceFromQuery = urlParams.get(SOURCE_KEY);
   if (sourceFromQuery) {
     try {
       if (window.history.replaceState) {
-        var newurl =
-          window.location.protocol +
-          "//" +
-          window.location.host +
-          window.location.pathname;
-        window.history.replaceState({ path: newurl }, "", newurl);
+        window.history.replaceState({ path: blankUrl }, "", blankUrl);
       }
       const result = atobu(sourceFromQuery);
       return result;
