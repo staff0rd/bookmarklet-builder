@@ -27,6 +27,8 @@ const minify = async (source: string) => {
   return `javascript:(function(){${formatted.code}})()`;
 };
 
+document.getElementById("loading")?.remove();
+
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
