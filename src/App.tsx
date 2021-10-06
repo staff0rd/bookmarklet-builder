@@ -20,7 +20,7 @@ import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import { getOs } from "./getOs";
 import { initialCode } from "./getInitialCode";
-import { getSourceFromUrl } from "./getSourceFromUrl";
+import { getSourceUrl } from "./getSourceUrl";
 
 const minify = async (source: string) => {
   const formatted = await terser.minify(source);
@@ -143,7 +143,7 @@ function App() {
           <Grid item xs={12} sm={4}>
             <Typography variant="h5">Source</Typography>
             <Box sx={{ marginLeft: 1 }}>
-              <Link href={getSourceFromUrl(editor?.getValue() || "")}>
+              <Link href={getSourceUrl(editor?.getValue() || "")}>
                 {name} Source
               </Link>
             </Box>

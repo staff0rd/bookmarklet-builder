@@ -1,10 +1,12 @@
-const startupSource = `const someFunction = () => 'hi there console!';
-console.log(someFunction());
+export const SOURCE_KEY = "source";
+
+const startupSource = `const someFunction = () => "hello!";
+alert(someFunction());
 `;
 
 const getDefaultValue = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const sourceFromQuery = urlParams.get("source");
+  const sourceFromQuery = urlParams.get(SOURCE_KEY);
   if (sourceFromQuery) {
     if (window.history.replaceState) {
       var newurl =
@@ -15,10 +17,9 @@ const getDefaultValue = () => {
       window.history.replaceState({ path: newurl }, "", newurl);
     }
     const result = atob(sourceFromQuery);
-    console.log("result", result);
     return result;
   }
-  const source = localStorage.getItem("source");
+  const source = localStorage.getItem(SOURCE_KEY);
   return source || startupSource;
 };
 export const initialCode = getDefaultValue();
