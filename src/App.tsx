@@ -33,7 +33,7 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [bookmarklet, setBookmarklet] = useState("");
-  const [name, setName] = useState("My bookmarklet");
+  const [name, setName] = useState(initialCode.name);
   const os = getOs();
 
   const compileBookmarklet = async (source: string) => {
@@ -143,7 +143,7 @@ function App() {
           <Grid item xs={12} sm={4}>
             <Typography variant="h5">Source</Typography>
             <Box sx={{ marginLeft: 1 }}>
-              <Link href={getSourceUrl(editor?.getValue() || "")}>
+              <Link href={getSourceUrl(editor?.getValue() || "", name)}>
                 {name} Source
               </Link>
             </Box>
@@ -154,7 +154,7 @@ function App() {
               height="250px"
               defaultLanguage="javascript"
               theme={isDarkMode ? "vs-dark" : ""}
-              defaultValue={initialCode}
+              defaultValue={initialCode.source}
               onMount={async (e) => {
                 setEditor(e);
                 compileBookmarklet(e.getValue());
